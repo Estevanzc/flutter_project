@@ -6,15 +6,11 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          leading: IconButton(onPressed: () => Navigator.pop(context), icon: Icon(Icons.arrow_back)),
-          title: Text("Your Profile", style: Styles.pageTitle),
+            title: Text("Your Profile", style: Styles.pageTitle),
         ),
         body: Container(child: Text("profile")),
-      ),
-    );
+      );
   }
 }
