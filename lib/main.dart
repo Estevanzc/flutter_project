@@ -51,6 +51,40 @@ class MyApp extends StatelessWidget {
                   actionsPadding: EdgeInsets.only(right: 10),
                 ),
                 body: HomePage(),
+                floatingActionButton: FloatingActionButton.extended(
+                  onPressed: () {},
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.blue[200],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        SizedBox(width: 15),
+                        Text(
+                          "Add a new note",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 drawer: Drawer(
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 50),

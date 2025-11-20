@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/constants/styles.dart';
 import 'package:flutter_project/widgets/notes_list_widget.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
-  final List<Map<String, dynamic>> notes = [
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool listStyle = false;
+
+  List<Map<String, dynamic>> notes = [
     {
       "title": "Groceries",
       "content": "Buy milk and eggs",
@@ -37,11 +46,15 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      listStyle = !listStyle;
+                    });
+                  },
                   child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white10, width: 2.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    decoration: Theme.of(context).brightness == Brightness.dark
+                        ? Styles.switchDark
+                        : Styles.switchWhite,
                     child: Row(
                       children: [
                         Container(
@@ -50,13 +63,11 @@ class HomePage extends StatelessWidget {
                             horizontal: 10,
                             vertical: 5,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white10,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(6),
-                              bottomLeft: Radius.circular(6),
-                            ),
-                          ),
+                          decoration: !listStyle
+                              ? (Theme.of(context).brightness == Brightness.dark
+                                    ? Styles.choosenSwitchDark
+                                    : Styles.choosenSwitchwhite)
+                              : null,
                           child: Icon(Icons.window),
                         ),
                         Container(
@@ -65,6 +76,11 @@ class HomePage extends StatelessWidget {
                             horizontal: 10,
                             vertical: 5,
                           ),
+                          decoration: listStyle
+                              ? (Theme.of(context).brightness == Brightness.dark
+                                    ? Styles.choosenSwitchDark
+                                    : Styles.choosenSwitchwhite)
+                              : null,
                           child: Icon(Icons.list),
                         ),
                       ],
