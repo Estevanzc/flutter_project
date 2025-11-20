@@ -4,6 +4,7 @@ import 'package:flutter_project/notifiers/theme_provider.dart';
 import 'package:flutter_project/pages/home_page.dart';
 import 'package:flutter_project/pages/profile_page.dart';
 import 'package:flutter_project/pages/settings_page.dart';
+import 'package:flutter_project/pages/to_do_page.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -12,13 +13,22 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _pageIndex = 1;
+  final List<Widget> _pages = [HomePage(), ToDoPage()];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeNotifier, child) {
+        bool isDark = Theme.of(context).brightness == Brightness.dark;
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Config.lightTheme,
@@ -50,7 +60,7 @@ class MyApp extends StatelessWidget {
                   ],
                   actionsPadding: EdgeInsets.only(right: 10),
                 ),
-                body: HomePage(),
+                body: _pages[_pageIndex],
                 floatingActionButton: FloatingActionButton.extended(
                   onPressed: () {},
                   backgroundColor:
@@ -65,14 +75,17 @@ class MyApp extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.edit,
+                          _pageIndex == 0 ? Icons.edit : Icons.add,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.white
                               : Colors.black,
+                          size: 20,
                         ),
                         SizedBox(width: 15),
                         Text(
-                          "Add a new note",
+                          _pageIndex == 0
+                              ? "Write a new note"
+                              : "Add a new task",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color:
@@ -110,19 +123,39 @@ class MyApp extends StatelessWidget {
                           child: Divider(),
                         ),
 
-                        ListTile(
-                          leading: const Icon(Icons.home),
-                          title: const Text('Notes'),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
+                        Container(
+                          color: _pageIndex == 0
+                              ? (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white10
+                                    : Colors.grey.shade300)
+                              : null,
+                          child: ListTile(
+                            leading: const Icon(Icons.home),
+                            title: const Text('Notes'),
+                            onTap: () {
+                              setState(() {
+                                _pageIndex = 0;
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
-                        ListTile(
-                          leading: const Icon(Icons.list),
-                          title: const Text('To do'),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
+                        Container(
+                          color: _pageIndex == 1
+                              ? (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white10
+                                    : Colors.grey.shade300)
+                              : null,
+                          child: ListTile(
+                            leading: const Icon(Icons.list),
+                            title: const Text('To do'),
+                            onTap: () {
+                              setState(() {
+                                _pageIndex = 1;
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
                         Spacer(),
                         ListTile(
