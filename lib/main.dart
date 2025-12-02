@@ -13,22 +13,14 @@ void main() {
   );
 }
 
-class MyApp extends StatefulWidget {
+// 1. MyApp handles Theme and Setup ONLY
+class MyApp extends StatelessWidget {
   MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  int _pageIndex = 1;
-  final List<Widget> _pages = [HomePage(), ToDoPage()];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeNotifier, child) {
-        bool isDark = Theme.of(context).brightness == Brightness.dark;
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Config.lightTheme,
@@ -36,161 +28,244 @@ class _MyAppState extends State<MyApp> {
           themeMode: themeNotifier.isSimpleDarkMode
               ? ThemeMode.dark
               : ThemeMode.light,
-          home: Builder(
-            builder: (context) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    "My Keeps",
-                    style: TextStyle(fontFamily: "Garet"),
-                  ),
-                  actions: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-                    IconButton(
-                      icon: const Icon(Icons.settings),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                  actionsPadding: EdgeInsets.only(right: 10),
-                ),
-                body: _pages[_pageIndex],
-                floatingActionButton: FloatingActionButton.extended(
-                  onPressed: () {},
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.blue[200],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _pageIndex == 0 ? Icons.edit : Icons.add,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          size: 20,
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          _pageIndex == 0
-                              ? "Write a new note"
-                              : "Add a new task",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                drawer: Drawer(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 50),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            bottom: 15,
-                          ),
-                          child: Text(
-                            'Fast menu',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Divider(),
-                        ),
+          // We point home to the new MainPage class
+          home: MainPage(),
+        );
+      },
+    );
+  }
+}
 
-                        Container(
-                          color: _pageIndex == 0
-                              ? (Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white10
-                                    : Colors.grey.shade300)
-                              : null,
-                          child: ListTile(
-                            leading: const Icon(Icons.home),
-                            title: const Text('Notes'),
-                            onTap: () {
-                              setState(() {
-                                _pageIndex = 0;
-                              });
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        Container(
-                          color: _pageIndex == 1
-                              ? (Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white10
-                                    : Colors.grey.shade300)
-                              : null,
-                          child: ListTile(
-                            leading: const Icon(Icons.list),
-                            title: const Text('To do'),
-                            onTap: () {
-                              setState(() {
-                                _pageIndex = 1;
-                              });
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        Spacer(),
-                        ListTile(
-                          leading: const Icon(Icons.person),
-                          title: const Text('Profile'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfilePage(),
-                              ),
-                            );
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.settings),
-                          title: const Text('Settings'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SettingsPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+// 2. MainPage handles your UI, Logic, and State
+class MainPage extends StatefulWidget {
+  MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int _pageIndex = 1;
+  final List<Widget> _pages = [HomePage(), ToDoPage()];
+  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  void _openAddNoteSheet() {
+    bool isNote = _pageIndex == 0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isNote ? "Add New Note" : "Add New Task",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 15),
+            if (isNote)
+              Column(
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      labelText: "Title (Optional)",
+                      border: OutlineInputBorder(),
                     ),
                   ),
-                ),
+                  SizedBox(height: 15),
+                ],
+              ),
+            TextField(
+              controller: _noteController,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: isNote
+                    ? "Write something..."
+                    : "What needs to be done?",
+                border: const OutlineInputBorder(),
+              ),
+              maxLines: isNote ? 3 : 1,
+            ),
+            const SizedBox(height: 20),
+            if (!isNote)
+              Column(
+                children: [
+                  TextField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: "Task Description (Optional)",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                ],
+              ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  String text = _noteController.text.trim();
+                  if (text.isNotEmpty) {
+                    print("Saved: $text");
+                    // Add your Provider save logic here
+                    Navigator.of(context).pop();
+                    _noteController.clear();
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This context now safely belongs to MainPage, which is INSIDE MaterialApp
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("My Keeps", style: TextStyle(fontFamily: "Garet")),
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             },
           ),
-        );
-      },
+        ],
+        actionsPadding: EdgeInsets.only(right: 10),
+      ),
+      body: _pages[_pageIndex],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openAddNoteSheet,
+        // Your original logic for colors preserved
+        backgroundColor: isDark ? Colors.white10 : Colors.blue[200],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        label: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Icon(
+                _pageIndex == 0 ? Icons.edit : Icons.add,
+                color: isDark ? Colors.white : Colors.black,
+                size: 20,
+              ),
+              SizedBox(width: 15),
+              Text(
+                _pageIndex == 0 ? "Write a new note" : "Add a new task",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 50),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 16, right: 16, bottom: 15),
+                child: Text(
+                  'Fast menu',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Divider(),
+              ),
+              Container(
+                color: _pageIndex == 0
+                    ? (isDark ? Colors.white10 : Colors.grey.shade300)
+                    : null,
+                child: ListTile(
+                  leading: Icon(Icons.home),
+                  title: Text('Notes'),
+                  onTap: () {
+                    setState(() {
+                      _pageIndex = 0;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              Container(
+                color: _pageIndex == 1
+                    ? (isDark ? Colors.white10 : Colors.grey.shade300)
+                    : null,
+                child: ListTile(
+                  leading: Icon(Icons.list),
+                  title: Text('To do'),
+                  onTap: () {
+                    setState(() {
+                      _pageIndex = 1;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+              Spacer(),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text('Profile'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
