@@ -6,10 +6,17 @@ import 'package:flutter_project/pages/profile_page.dart';
 import 'package:flutter_project/pages/settings_page.dart';
 import 'package:flutter_project/pages/to_do_page.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_project/notifiers/data_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(create: (_) => ThemeProvider(), child: MyApp()),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => DataProvider()..loadData()),
+      ],
+      child: MyApp(),
+    ),
   );
 }
 
@@ -28,7 +35,6 @@ class MyApp extends StatelessWidget {
           themeMode: themeNotifier.isSimpleDarkMode
               ? ThemeMode.dark
               : ThemeMode.light,
-          // We point home to the new MainPage class
           home: MainPage(),
         );
       },
@@ -124,12 +130,31 @@ class _MainPageState extends State<MainPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  String text = _noteController.text.trim();
-                  if (text.isNotEmpty) {
-                    print("Saved: $text");
-                    // Add your Provider save logic here
+                  String titleText = _titleController.text.trim();
+                  String contentText = _noteController.text.trim();
+
+                  if (contentText.isNotEmpty) {
+                    final dataProvider = Provider.of<DataProvider>(
+                      context,
+                      listen: false,
+                    );
+
+                    if (isNote) {
+                      dataProvider.addNote(
+                        titleText.isEmpty ? "No Title" : titleText,
+                        contentText,
+                      );
+                    } else {
+                      dataProvider.addTask(
+                        contentText,
+                        _descriptionController.text
+                            .trim(),
+                      );
+                    }
+
                     Navigator.of(context).pop();
                     _noteController.clear();
+                    _titleController.clear();
                   }
                 },
                 child: const Text("Save"),
@@ -144,7 +169,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    // This context now safely belongs to MainPage, which is INSIDE MaterialApp
     bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -167,7 +191,6 @@ class _MainPageState extends State<MainPage> {
       body: _pages[_pageIndex],
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddNoteSheet,
-        // Your original logic for colors preserved
         backgroundColor: isDark ? Colors.white10 : Colors.blue[200],
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         label: Padding(

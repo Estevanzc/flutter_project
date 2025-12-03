@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'package:flutter_project/notifiers/data_provider.dart'; // Import DataProvider
 import 'package:flutter_project/widgets/to_do_widget.dart';
 
 class ToDoPage extends StatefulWidget {
@@ -9,99 +11,64 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  List<Map> tasks = [
-    {
-      "title": "Buy groceries",
-      "description": "Milk, eggs, bread, fruit",
-      "completed": false,
-    },
-    {
-      "title": "Clean the house",
-      "description": "Vacuum living room and wash dishes",
-      "completed": false,
-    },
-    {
-      "title": "Study Flutter",
-      "description": "Finish state management lesson",
-      "completed": false,
-    },
-    {
-      "title": "Workout",
-      "description": "30 minutes of cardio and stretching",
-      "completed": false,
-    },
-    {
-      "title": "Call mom",
-      "description": "Check in and talk about weekend plans",
-      "completed": false,
-    },
-  ];
-
-  void taskValue(int index) {
-    setState(() {
-      tasks[index]["completed"] = !tasks[index]["completed"];
-    });
-  }
-
-  void deleteTask(int index) {
-    setState(() {
-      tasks.removeAt(index);
-    });
-  }
+  // We removed the hardcoded 'tasks' list and local functions
+  // because the Provider handles them now.
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          return Dismissible(
-            key: Key(tasks[index]["title"]),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              padding: EdgeInsets.only(right: 20),
-              alignment: Alignment.centerRight,
-              color: Colors.red,
-              child: Icon(Icons.delete, color: Colors.white),
-            ),
-            onDismissed: (direction) {
-              deleteTask(index);
-            },
-            child: Dismissible(
-              key: Key(tasks[index]["title"]),
-              direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                setState(() {
-                  tasks.removeAt(index);
-                });
-              },
-      
-              background: Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade400,
-                  borderRadius: BorderRadius.circular(
-                    14,
+    // 1. Listen to the DataProvider
+    return Consumer<DataProvider>(
+      builder: (context, dataProvider, child) {
+        
+        // Get the real list from the database
+        final tasks = dataProvider.tasks;
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: ListView.builder(
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+
+              return Dismissible(
+                // Use UniqueKey so Flutter knows exactly which item to delete
+                key: UniqueKey(),
+                direction: DismissDirection.endToStart,
+                
+                // 2. Call the Provider to delete
+                onDismissed: (direction) {
+                  dataProvider.deleteTask(index);
+                },
+
+                // 3. Keep your EXACT styling for the delete background
+                background: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 20),
+                  child: Icon(Icons.delete, color: Colors.white),
                 ),
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: 20),
-                child: Icon(Icons.delete, color: Colors.white),
-              ),
-              child: ToDoWidget(
-                completed: tasks[index]["completed"],
-                title: tasks[index]["title"],
-                subtitle: tasks[index]["description"],
-                onToggle: () => taskValue(index),
-              ),
-            ),
-          );
-        },
-      ),
+
+                // 4. Map the Task data to your ToDoWidget
+                child: ToDoWidget(
+                  completed: task.isDone,
+                  title: task.title,
+                  // Use the description field we added earlier
+                  subtitle: task.description, 
+                  // Call the Provider to toggle checkbox
+                  onToggle: () => dataProvider.toggleTask(index), 
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
