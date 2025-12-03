@@ -29,19 +29,19 @@ class Note {
 
 class Task {
   String title;
-  String description; // <--- NEW: Added description field
+  String description;
   bool isDone;
 
   Task({
     required this.title,
-    this.description = '', // <--- NEW: Default to empty string
+    this.description = '',
     this.isDone = false,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'description': description, // <--- NEW: Save description
+      'description': description,
       'isDone': isDone,
     };
   }
@@ -49,7 +49,7 @@ class Task {
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
       title: map['title'],
-      description: map['description'] ?? '', // <--- NEW: Load description
+      description: map['description'] ?? '',
       isDone: map['isDone'] ?? false,
     );
   }

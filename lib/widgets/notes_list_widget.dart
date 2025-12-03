@@ -5,11 +5,11 @@ class NotesListWidget extends StatelessWidget {
   const NotesListWidget({
     super.key, 
     required this.notes,
-    this.onNoteTap, // 1. Accept the callback
+    this.onNoteTap,
   });
 
   final List<Map<String, dynamic>> notes;
-  final void Function(int index)? onNoteTap; // 2. Define the callback type
+  final void Function(int index)? onNoteTap;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,6 @@ class NotesListWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           final note = notes[index];
       
-          // 3. Wrap in GestureDetector to handle taps
           return GestureDetector(
             onTap: () {
               if (onNoteTap != null) {

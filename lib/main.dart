@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/constants/config.dart';
+import 'package:flutter_project/constants/styles.dart';
 import 'package:flutter_project/notifiers/theme_provider.dart';
 import 'package:flutter_project/pages/home_page.dart';
 import 'package:flutter_project/pages/profile_page.dart';
@@ -30,8 +31,16 @@ class MyApp extends StatelessWidget {
       builder: (context, themeNotifier, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: Config.lightTheme,
-          darkTheme: Config.darkTheme,
+          theme: Config.lightTheme.copyWith(
+            textTheme: Config.lightTheme.textTheme.apply(
+              fontFamily: themeNotifier.fontFamily,
+            ),
+          ),
+          darkTheme: Config.darkTheme.copyWith(
+            textTheme: Config.darkTheme.textTheme.apply(
+              fontFamily: themeNotifier.fontFamily,
+            ),
+          ),
           themeMode: themeNotifier.isSimpleDarkMode
               ? ThemeMode.dark
               : ThemeMode.light,
@@ -51,7 +60,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _pageIndex = 1;
+  int _pageIndex = 0;
   final List<Widget> _pages = [HomePage(), ToDoPage()];
   final TextEditingController _noteController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
@@ -60,6 +69,8 @@ class _MainPageState extends State<MainPage> {
   @override
   void dispose() {
     _noteController.dispose();
+    _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -147,14 +158,14 @@ class _MainPageState extends State<MainPage> {
                     } else {
                       dataProvider.addTask(
                         contentText,
-                        _descriptionController.text
-                            .trim(),
+                        _descriptionController.text.trim(),
                       );
                     }
 
                     Navigator.of(context).pop();
                     _noteController.clear();
                     _titleController.clear();
+                    _descriptionController.clear();
                   }
                 },
                 child: const Text("Save"),
@@ -173,7 +184,7 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("My Keeps", style: TextStyle(fontFamily: "Garet")),
+        title: Text("My Keeps", style: Styles.pageTitle),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(
@@ -225,7 +236,6 @@ class _MainPageState extends State<MainPage> {
                   'Fast menu',
                   style: TextStyle(
                     fontSize: 24,
-                    fontFamily: "Roboto",
                     fontWeight: FontWeight.bold,
                   ),
                 ),

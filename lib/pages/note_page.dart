@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/notifiers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_project/notifiers/data_provider.dart';
 
@@ -18,10 +19,11 @@ class _NotePageState extends State<NotePage> {
   @override
   void initState() {
     super.initState();
-    // 1. Get the note data using the index
-    final note = Provider.of<DataProvider>(context, listen: false).notes[widget.noteIndex];
-    
-    // 2. Pre-fill the controllers
+    final note = Provider.of<DataProvider>(
+      context,
+      listen: false,
+    ).notes[widget.noteIndex];
+
     _titleController = TextEditingController(text: note.title);
     _contentController = TextEditingController(text: note.content);
   }
@@ -33,7 +35,6 @@ class _NotePageState extends State<NotePage> {
     super.dispose();
   }
 
-  // 3. Save changes automatically
   void _save() {
     Provider.of<DataProvider>(context, listen: false).updateNote(
       widget.noteIndex,
@@ -49,14 +50,20 @@ class _NotePageState extends State<NotePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
             onPressed: () {
-              Provider.of<DataProvider>(context, listen: false).deleteNote(widget.noteIndex);
+              Provider.of<DataProvider>(
+                context,
+                listen: false,
+              ).deleteNote(widget.noteIndex);
               Navigator.pop(context);
             },
           ),
@@ -67,13 +74,11 @@ class _NotePageState extends State<NotePage> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            // Title Field (View & Edit combined)
             TextField(
               controller: _titleController,
               onChanged: (_) => _save(), // Autosave
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                fontSize: Provider.of<ThemeProvider>(context).fontSize,
               ),
               decoration: const InputDecoration(
                 hintText: "Title",
@@ -82,14 +87,15 @@ class _NotePageState extends State<NotePage> {
               ),
             ),
             const Divider(),
-            // Content Field (View & Edit combined)
             Expanded(
               child: TextField(
                 controller: _contentController,
                 onChanged: (_) => _save(), // Autosave
                 maxLines: null, // Unlimited lines
                 expands: true,
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(
+                  fontSize: Provider.of<ThemeProvider>(context).fontSize,
+                ),
                 decoration: const InputDecoration(
                   hintText: "Start typing...",
                   border: InputBorder.none,

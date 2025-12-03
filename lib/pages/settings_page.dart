@@ -20,18 +20,15 @@ class SettingsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Preferences", style: Styles.settingsTitle),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+                
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Column(
                     children: [
                       GestureDetector(
                         onTap: () {
-                          bool newValue = !themeNotifier.isSimpleDarkMode;
-                          Provider.of<ThemeProvider>(
-                            context,
-                            listen: false,
-                          ).toggleTheme(newValue);
+                          themeNotifier.toggleTheme(!themeNotifier.isSimpleDarkMode);
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -40,68 +37,83 @@ class SettingsPage extends StatelessWidget {
                             Switch(
                               value: themeNotifier.isSimpleDarkMode,
                               onChanged: (value) {
-                                Provider.of<ThemeProvider>(
-                                  context,
-                                  listen: false,
-                                ).toggleTheme(value);
+                                themeNotifier.toggleTheme(value);
                               },
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Text font", style: Styles.settingsOption),
-                            DropdownButton(
-                              value: 0,
-                              items: [
-                                DropdownMenuItem(
-                                  value: 0,
-                                  child: Text(
-                                    "Roboto",
-                                    style: TextStyle(fontFamily: "Roboto"),
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 1,
-                                  child: Text(
-                                    "Poppins",
-                                    style: TextStyle(fontFamily: "Poppins"),
-                                  ),
-                                ),
-                              ],
-                              onChanged: (value) {},
-                            ),
-                          ],
-                        ),
+                      
+                      const SizedBox(height: 20),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Text font", style: Styles.settingsOption),
+                          DropdownButton<String>(
+                            value: themeNotifier.fontFamily,
+                            underline: Container(), // Remove underline for cleaner look
+                            items: const [
+                              DropdownMenuItem(
+                                value: "Roboto",
+                                child: Text("Roboto", style: TextStyle(fontFamily: "Roboto")),
+                              ),
+                              DropdownMenuItem(
+                                value: "Poppins",
+                                child: Text("Poppins", style: TextStyle(fontFamily: "Poppins")),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                themeNotifier.setFontFamily(newValue);
+                              }
+                            },
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  "Text size:",
-                                  style: Styles.settingsOption,
+
+                      const SizedBox(height: 20),
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Text size:", style: Styles.settingsOption),
+                              Text(
+                                themeNotifier.fontSize.toStringAsFixed(1),
+                                style: TextStyle(
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[600],
                                 ),
-                                SizedBox(width: 10),
-                                Text("24"),
-                              ],
+                              ),
+                            ],
+                          ),
+                          Slider.adaptive(
+                            value: themeNotifier.fontSize,
+                            min: 12.0,
+                            max: 30.0,
+                            divisions: 18, // Steps of 1.0
+                            label: themeNotifier.fontSize.toStringAsFixed(1),
+                            onChanged: (value) {
+                              themeNotifier.setFontSize(value);
+                            },
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                "Preview Text",
+                                style: TextStyle(
+                                  fontFamily: themeNotifier.fontFamily,
+                                  fontSize: themeNotifier.fontSize,
+                                ),
+                              ),
                             ),
-                            Slider.adaptive(
-                              value: 0,
-                              onChanged: (value) {},
-                              max: 1,
-                            ),
-                          ],
-                        ),
+                          )
+                        ],
                       ),
                     ],
                   ),

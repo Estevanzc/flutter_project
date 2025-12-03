@@ -26,11 +26,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Listen to Provider
     return Consumer<DataProvider>(
       builder: (context, dataProvider, child) {
         
-        // 2. Convert Data to Maps (to keep your Widget happy)
         List<Map<String, dynamic>> notes = dataProvider.notes.map((note) {
           return {
             "title": note.title,
@@ -42,7 +40,6 @@ class _HomePageState extends State<HomePage> {
         return SingleChildScrollView(
           child: Column(
             children: [
-              // --- YOUR ORIGINAL TOGGLE UI ---
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20.0),
                 child: Row(
@@ -94,13 +91,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // --- YOUR ORIGINAL LIST WIDGET ---
-              // I'm passing 'onNoteTap' so you can connect the click.
-              // You might need to update NotesListWidget to accept this function.
               NotesListWidget(
                 notes: notes, 
-                // Pass listStyle if your widget supports grid/list switching
-                // isGrid: !listStyle, 
                 onNoteTap: _navigateToNote, 
               ),
             ],
