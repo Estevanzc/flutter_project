@@ -24,7 +24,6 @@ class ProfilePage extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             
-            // 1. Profile Image (Static Asset)
             Center(
               child: Stack(
                 children: [
@@ -34,13 +33,10 @@ class ProfilePage extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.blue.shade100,
-                      // --- THIS IS THE CODE THAT SELECTS YOUR IMAGE ---
                       image: const DecorationImage(
-                        // Make sure 'assets/avatar.jpg' exists in your project!
                         image: AssetImage('assets/images/profile.jpg'), 
                         fit: BoxFit.cover,
                       ),
-                      // ------------------------------------------------
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
@@ -51,7 +47,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   
-                  // Edit Icon (Visual only)
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -75,7 +70,6 @@ class ProfilePage extends StatelessWidget {
             
             const SizedBox(height: 20),
             
-            // 2. Name & Email
             const Text(
               "Guest User",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -88,7 +82,6 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // 3. Stats Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
@@ -107,7 +100,6 @@ class ProfilePage extends StatelessWidget {
             const Divider(thickness: 1),
             const SizedBox(height: 10),
 
-            // 4. Menu Options
             _buildMenuOption(context, Icons.person_outline, "Edit Profile"),
             _buildMenuOption(context, Icons.notifications_outlined, "Notifications"),
             _buildMenuOption(context, Icons.lock_outline, "Privacy & Security"),
@@ -115,7 +107,6 @@ class ProfilePage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // 5. Logout Button
             TextButton.icon(
               onPressed: () {},
               icon: const Icon(Icons.logout, color: Colors.redAccent),
@@ -131,7 +122,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Widget for Stats
   Widget _buildStatCard(BuildContext context, String label, String value) {
     return Column(
       children: [
@@ -156,7 +146,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Helper Widget for Menu Items
   Widget _buildMenuOption(BuildContext context, IconData icon, String title) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),

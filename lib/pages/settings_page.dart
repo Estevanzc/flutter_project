@@ -52,7 +52,7 @@ class SettingsPage extends StatelessWidget {
                           Text("Text font", style: Styles.settingsOption),
                           DropdownButton<String>(
                             value: themeNotifier.fontFamily,
-                            underline: Container(), // Remove underline for cleaner look
+                            underline: Container(),
                             items: const [
                               DropdownMenuItem(
                                 value: "Roboto",
@@ -95,7 +95,7 @@ class SettingsPage extends StatelessWidget {
                             value: themeNotifier.fontSize,
                             min: 12.0,
                             max: 30.0,
-                            divisions: 18, // Steps of 1.0
+                            divisions: 18,
                             label: themeNotifier.fontSize.toStringAsFixed(1),
                             onChanged: (value) {
                               themeNotifier.setFontSize(value);

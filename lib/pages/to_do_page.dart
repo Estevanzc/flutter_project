@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import Provider
-import 'package:flutter_project/notifiers/data_provider.dart'; // Import DataProvider
+import 'package:provider/provider.dart';
+import 'package:flutter_project/notifiers/data_provider.dart';
 import 'package:flutter_project/widgets/to_do_widget.dart';
 
 class ToDoPage extends StatefulWidget {
