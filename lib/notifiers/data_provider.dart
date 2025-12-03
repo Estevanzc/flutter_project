@@ -36,17 +36,25 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // --- UPDATED FUNCTION ---
+  // --- NEW: Update an existing note ---
+  void updateNote(int index, String title, String content) {
+    _notes[index].title = title;
+    _notes[index].content = content;
+    _notes[index].date = DateTime.now(); // Update the time to "Just now"
+    _saveNotes();
+    notifyListeners();
+  }
+  // ------------------------------------
+
   void addTask(String title, String description) {
     Task newTask = Task(
       title: title, 
-      description: description, // Now this works because Task has this field
+      description: description
     );
     _tasks.add(newTask);
     _saveTasks();
     notifyListeners();
   }
-  // ------------------------
 
   void deleteNote(int index) {
     _notes.removeAt(index);
