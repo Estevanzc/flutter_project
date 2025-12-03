@@ -4,6 +4,7 @@ import 'package:flutter_project/constants/styles.dart';
 import 'package:flutter_project/notifiers/theme_provider.dart';
 import 'package:flutter_project/pages/home_page.dart';
 import 'package:flutter_project/pages/profile_page.dart';
+import 'package:flutter_project/pages/search_page.dart';
 import 'package:flutter_project/pages/settings_page.dart';
 import 'package:flutter_project/pages/to_do_page.dart';
 import 'package:provider/provider.dart';
@@ -186,7 +187,16 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: Text("My Keeps", style: Styles.pageTitle),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          if (_pageIndex == 0)
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchPage()),
+                );
+              },
+              icon: Icon(Icons.search),
+            ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
@@ -234,10 +244,7 @@ class _MainPageState extends State<MainPage> {
                 padding: EdgeInsets.only(left: 16, right: 16, bottom: 15),
                 child: Text(
                   'Fast menu',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
               Padding(
